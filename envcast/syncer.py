@@ -65,6 +65,15 @@ def sync_env(
 
 
 def _write_env_file(path: str, env: Dict[str, str]) -> None:
-    """Write an env dict to a .env file."""
-    lines = [f'{key}="{value}"\n' for key, value in sorted(env.items())]
-    Path(path).write_text("".join(lines), encoding="utf-8")
+    """Write an env dict to a .env file.
+
+    Raises:
+        OSError: If the file cannot be written (e.g. permission denied).
+    """
+    target = Path(path)
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        lines = [f'{key}="{value}"\n' for key, value in sorted(env.items())]
+        target.write_text("".join(lines), encoding="utf-8")
+    except OSError as exc:
+        raise OSError(f"Failed to write env file '{path}': {exc}") from exc
