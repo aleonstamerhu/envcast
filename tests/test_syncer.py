@@ -65,3 +65,12 @@ def test_write_env_file_sorted(tmp_path):
     lines = out.read_text().splitlines()
     assert lines[0].startswith("A_KEY")
     assert lines[1].startswith("Z_KEY")
+
+
+def test_sync_unchanged_keys_not_in_added_or_updated(source_env, target_env):
+    """Keys present in both source and target with the same value should not
+    appear in added or updated regardless of the overwrite flag."""
+    result = sync_env(source_env, target_env, "fake.env", dry_run=True, overwrite=True)
+    # DEBUG exists in both envs with the same value "true"
+    assert "DEBUG" not in result.added
+    assert "DEBUG" not in result.updated
