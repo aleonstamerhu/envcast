@@ -67,3 +67,10 @@ def test_diff_empty_envs():
     result = diff_envs({}, {})
     assert not result.has_differences
     assert result.all_keys == set()
+
+
+def test_diff_ignore_keys_does_not_affect_matching(source_env, target_env):
+    """Keys in ignore_keys should not appear in any result category, including matching."""
+    result = diff_envs(source_env, target_env, ignore_keys=["DB_HOST", "PORT"])
+    assert "DB_HOST" not in result.matching
+    assert "PORT" not in result.matching
