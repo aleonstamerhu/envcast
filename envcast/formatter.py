@@ -39,7 +39,7 @@ def format_diff(
         Formatted string representation of the diff.
     """
     lines = []
-    header = f"Diff: {source_label} → {target_label}"
+    header = f"Diff: {source_label} \u2192 {target_label}"
     lines.append(_colorize(header, ANSI_BOLD, use_color))
     lines.append("-" * len(header))
 
@@ -54,7 +54,7 @@ def format_diff(
 
     for key in sorted(result.changed):
         src_val, tgt_val = result.changed[key]
-        lines.append(_colorize(f"~ {key}: {_val(src_val)} → {_val(tgt_val)}", ANSI_YELLOW, use_color))
+        lines.append(_colorize(f"~ {key}: {_val(src_val)} \u2192 {_val(tgt_val)}", ANSI_YELLOW, use_color))
 
     if show_matching:
         for key in sorted(result.matching):
@@ -64,3 +64,23 @@ def format_diff(
         lines.append(_colorize("No differences found.", ANSI_GREEN, use_color))
 
     return "\n".join(lines)
+
+
+def format_summary(result: DiffResult, use_color: bool = True) -> str:
+    """Render a compact one-line summary of a DiffResult.
+
+    Args:
+        result: The DiffResult to summarise.
+        use_color: Whether to include ANSI color codes.
+
+    Returns:
+        A single-line summary string, e.g.
+        "Summary: 2 removed, 1 added, 3 changed, 5 matching"
+    """
+    parts = [
+        _colorize(f"{len(result.only_in_source)} removed", ANSI_RED, use_color),
+        _colorize(f"{len(result.only_in_target)} added", ANSI_GREEN, use_color),
+        _colorize(f"{len(result.changed)} changed", ANSI_YELLOW, use_color),
+        f"{len(result.matching)} matching",
+    ]
+    return "Summary: " + ", ".join(parts)
