@@ -59,3 +59,15 @@ def test_errors_and_warnings_partitioned_correctly():
     result = lint_env({"lower": "", "MY_KEY": " bad "})
     assert all(i.level == "error" for i in result.errors)
     assert all(i.level == "warning" for i in result.warnings)
+
+
+def test_error_count_matches_errors_list():
+    """Ensure error_count is consistent with the errors list length."""
+    result = lint_env({"MY_KEY": " bad ", "my_key": "collision"})
+    assert result.error_count == len(result.errors)
+
+
+def test_warning_count_matches_warnings_list():
+    """Ensure warning_count is consistent with the warnings list length."""
+    result = lint_env({"lower": "", "MixedCase": "value"})
+    assert result.warning_count == len(result.warnings)
